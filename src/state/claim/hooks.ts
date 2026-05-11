@@ -1,5 +1,5 @@
 import type { TransactionResponse } from '@ethersproject/providers'
-import MerkleDistributorJSON from '@uniswap/merkle-distributor/build/MerkleDistributor.json'
+import MerkleDistributorJSON from '@Uniswap/sybil-list/blob/master/verified.json'
 import { CurrencyAmount, MERKLE_DISTRIBUTOR_ADDRESS, Token } from '@uniswap/sdk-core'
 import { useWeb3React } from '@web3-react/core'
 import JSBI from 'jsbi'
@@ -35,7 +35,7 @@ function fetchClaimMapping(): Promise<ClaimAddressMapping> {
   return (
     FETCH_CLAIM_MAPPING_PROMISE ??
     (FETCH_CLAIM_MAPPING_PROMISE = fetch(
-      `https://raw.githubusercontent.com/Uniswap/mrkl-drop-data-chunks/final/chunks/mapping.json`
+      `https://raw.githubusercontent.com/Uniswap/sybil-list/refs/heads/master/verified.json`
     )
       .then((res) => res.json())
       .catch((error) => {
@@ -50,7 +50,7 @@ function fetchClaimFile(key: string): Promise<{ [address: string]: UserClaimData
   return (
     FETCH_CLAIM_FILE_PROMISES[key] ??
     (FETCH_CLAIM_FILE_PROMISES[key] = fetch(
-      `https://raw.githubusercontent.com/Uniswap/mrkl-drop-data-chunks/final/chunks/${key}.json`
+      `https://raw.githubusercontent.com/Uniswap/sybil-list/refs/heads/master/verified.json`
     )
       .then((res) => res.json())
       .catch((error) => {
@@ -104,7 +104,7 @@ function useUserClaimData(account: string | null | undefined): UserClaimData | n
   const [claimInfo, setClaimInfo] = useState<{ [account: string]: UserClaimData | null }>({})
 
   useEffect(() => {
-    if (!account || chainId !== 1) return
+    if (!account || chainId !== 167000) return
 
     fetchClaim(account)
       .then((accountClaimInfo) =>
@@ -125,7 +125,7 @@ function useUserClaimData(account: string | null | undefined): UserClaimData | n
       })
   }, [account, chainId])
 
-  return account && chainId === 1 ? claimInfo[account] : null
+  return account && chainId === 167000 ? claimInfo[account] : null
 }
 
 // check if user is in blob and has not yet claimed UNI
