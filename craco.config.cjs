@@ -54,12 +54,29 @@ module.exports = {
           // Transform vanilla-extract using its own transformer.
           // See https://sandroroth.com/blog/vanilla-extract-cra#jest-transform.
           '\\.css\\.ts$': '@vanilla-extract/jest-transform',
-          '\\.(t|j)sx?$': '@swc/jest',
+          // Inline swc config for jest: skips .swcrc's experimental plugins
+          // (@lingui/swc-plugin, @swc/plugin-styled-components), which ship as
+          // wasm with a pinned swc_core ABI and crash the current @swc/core.
+          // Tests don't need either plugin.
+          '\\.(t|j)sx?$': ['@swc/jest', {
+            swcrc: false,
+            configFile: false,
+            jsc: {
+              target: 'es2020',
+              keepClassNames: true,
+              parser: { syntax: 'typescript', tsx: true },
+              transform: { react: { runtime: 'automatic' } },
+            },
+          }],
         },
         // Use d3-arrays's build directly, as jest does not support its exports.
         transformIgnorePatterns: ['d3-array'],
         moduleNameMapper: {
           'd3-array': 'd3-array/dist/d3-array.min.js',
+          // @lingui/macro is compile-time only (normally via @lingui/swc-plugin).
+          // Jest skips that plugin (see transform above), so route the macros
+          // through a runtime mock to avoid "t is not a function" at eval time.
+          '^@lingui/macro$': '<rootDir>/src/test-utils/lingui-macro-mock.tsx',
         },
       })
     },

@@ -3,11 +3,11 @@ import { deepCopy } from '@ethersproject/properties'
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { StaticJsonRpcProvider } from '@ethersproject/providers'
 import { isPlain } from '@reduxjs/toolkit'
+import { TAIKO_HOODI_CHAIN_ID, TAIKO_MAINNET_CHAIN_ID } from 'config/chains'
 
-import { AVERAGE_L1_BLOCK_TIME } from './chainInfo'
+import { getAverageBlockTime } from './chainInfo'
 import { CHAIN_IDS_TO_NAMES, SupportedInterfaceChain } from './chains'
 import { RPC_URLS } from './networks'
-import { TAIKO_HOODI_CHAIN_ID, TAIKO_MAINNET_CHAIN_ID } from 'config/chains'
 
 class AppJsonRpcProvider extends StaticJsonRpcProvider {
   private _blockCache = new Map<string, Promise<any>>()
@@ -27,7 +27,7 @@ class AppJsonRpcProvider extends StaticJsonRpcProvider {
     // NB: Third-party providers (eg MetaMask) will have their own polling intervals,
     // which should be left as-is to allow operations (eg transaction confirmation) to resolve faster.
     // Network providers (eg AppJsonRpcProvider) need to update less frequently to be considered responsive.
-    this.pollingInterval = AVERAGE_L1_BLOCK_TIME
+    this.pollingInterval = getAverageBlockTime(chainId)
   }
 
   send(method: string, params: Array<any>): Promise<any> {
